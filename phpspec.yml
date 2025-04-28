@@ -1,5 +1,5 @@
 suites:
     main:
-        namespace: Telota
-        psr4_prefix: Telota
-        src_path: src/Telota
+        namespace: CCev
+        psr4_prefix: CCev
+        src_path: src/CCev

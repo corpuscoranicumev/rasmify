@@ -1,23 +1,16 @@
 {
-    "name": "telota/rasmify",
+    "name": "corpuscoranicumev/rasmify",
     "description": "Reduce Arabic strings to their rasm, i.e. remove vocalization and other diacritics",
-    "type": "library",
-    "license": "LGPL-3.0",
+    "type": "project",
+    "license": "LGPL-3.0-only",
     "authors": [
         {
-            "name": "Oliver Pohl",
-            "email": "opohl@bbaw.de"
+            "name": "Karina Söhl",
+            "email": "karina@soehl.eu"
         }
     ],
     "minimum-stability": "dev",
-    "require": {},
-    "require-dev": {
-        "phpspec/phpspec": "^3.0"
-    },
-    "config": {
-        "bin-dir": "bin"
-    },
-    "autoload": {
-        "psr-4": {"Telota\\": "src/Telota"}
-    }
+    "require": {
+        "ext-intl": "*"},
+    "autoload":{"psr-4": {"CCev\\": "src/"}}
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Telota;
+namespace CCev;
 
 class Rasmify
 {
@@ -8,23 +8,17 @@ class Rasmify
     static function rasmify($arabicString)
     {
 
-        /**
-         * List of unicode characters that should be removed
-         * '\u0615', '\u0617', '\u0618', '\u0619', '\u061A', '\u061E',
-         * '\u0621',
-         * '\u0640
-         * '\u064B', '\u064C', '\u064D', '\u064F', '\u0650', '\u0651', '\u0652', '\u0653', '\u0654', '\u0655
-         * '\u0656',
-         * '\u0670',
-         * '\u0674',
-         * '\u06D6', '\u06D7', '\u06D8', '\u06D9', '\u06DA', '\u06DB', '\u06DC',
-         * '\06DF', \u06E1', '\u06E2', '\u06E3', '\u06E4', '\u06E5', '\u06E6'
-         * '\u06ED',
-         **/
-        $removeCharacterMap = '[\u0615-\u061e\u0621\u0640\u064b-\u0655\u0656\u0670\u0674\u06d6-\u06dc\u06df\u06e1-\u06e6\u06ed] remove';
+        /** first use Unicode-Normalization to separate combined characters */
 
-        // Remove unwanted characters
-        $rasmString = transliterator_transliterate($removeCharacterMap, $arabicString);
+        $normalizedArabicString = \Normalizer::normalize($arabicString, \Normalizer::NFKC);
+
+        // all the Arabic non-spacing-mark characters, 0x0674 added
+        $arabicNSM = [0x0610, 0x0611, 0x0612, 0x0613, 0x0614, 0x0615, 0x0616, 0x0617, 0x0618, 0x0619, 0x061A, 0x064B, 0x064C, 0x064D, 0x064E, 0x064F, 0x0650, 0x0651, 0x0652, 0x0653, 0x0654, 0x0655, 0x0656, 0x0657, 0x0658, 0x0659, 0x065A, 0x065B, 0x065C, 0x065D, 0x065E, 0x065F, 0x0670, 0x0674, 0x06D6, 0x06D7, 0x06D8, 0x06D9, 0x06DA, 0x06DB, 0x06DC, 0x06DF, 0x06E0, 0x06E1, 0x06E2, 0x06E3, 0x06E4, 0x06E7, 0x06E8, 0x06EA, 0x06EB, 0x06EC, 0x06ED, 0x0897, 0x0898, 0x0899, 0x089A, 0x089B, 0x089C, 0x089D, 0x089E, 0x089F, 0x08CA, 0x08CB, 0x08CC, 0x08CD, 0x08CE, 0x08CF, 0x08D0, 0x08D1, 0x08D2, 0x08D3, 0x08D4, 0x08D5, 0x08D6, 0x08D7, 0x08D8, 0x08D9, 0x08DA, 0x08DB, 0x08DC, 0x08DD, 0x08DE, 0x08DF, 0x08E0, 0x08E1, 0x08E3, 0x08E4, 0x08E5, 0x08E6, 0x08E7, 0x08E8, 0x08E9, 0x08EA, 0x08EB, 0x08EC, 0x08ED, 0x08EE, 0x08EF, 0x08F0, 0x08F1, 0x08F2, 0x08F3, 0x08F4, 0x08F5, 0x08F6, 0x08F7, 0x08F8, 0x08F9, 0x08FA, 0x08FB, 0x08FC, 0x08FD, 0x08FE, 0x08FF, 0x10EFC, 0x10EFD, 0x10EFE, 0x10EFF];
+
+        $arabicStringNoVowels = Rasmify::remove_characters($arabicNSM, $normalizedArabicString);
+
+        $arabicRasm = Rasmify::replace_characters($arabicStringNoVowels);
+        /**
 
         // Replace arabic letter alef wasla (\u0671) with arabic letter alef (\u0627)
         $rasmString = str_replace("ٱ", "ا", $rasmString);
@@ -100,10 +94,35 @@ class Rasmify
 
         // Insert zero-width-joiner (\u200D) into lam lam ha to avoid wrong ligatures
         $rasmString = str_replace("لله", "لل‍ه", $rasmString);
-
+*/
         // Remove surrounding whitespace and return rasm
-        return trim($rasmString);
+        return trim($arabicRasm);
 
 
+    }
+    static function remove_characters($removeList, $arabicString){
+        foreach($removeList as $x){
+            $uniChr = \IntlChar::chr($x);
+            $arabicString = str_replace($uniChr,'',$arabicString);
+        }
+        return $arabicString;
+    }
+
+    static function replace_characters($arabicString){
+        $data = array();
+        if (($handle = fopen('./data/basecharacters.csv', 'r')) !== false) {
+            while (($row = fgetcsv($handle)) !== false) {
+                if (count($row) == 2) {
+                    $data[$row[0]] = $row[1];
+                }
+            }
+            fclose($handle);
+        }
+
+        foreach($data as $key => $value){
+            $arabicString = str_replace($key, $value, $arabicString);
+        }
+
+        return $arabicString;
     }
 }
