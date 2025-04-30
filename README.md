@@ -7,7 +7,7 @@ For example, the first verse of the Qur'an as found on [corpuscoranicum.org](htt
 Compare the following examples:
 
 **Text with diacritics etc**
-![First sura of the Qur'an with diacritics etc](assets/quranic_text_with_diacritics.png)
+![First sura of the Qur'an with diacritics etc](assets/quranic_text_diacritics.png)
 
 **Text without diacritics (rasmified)**
 ![First sura of the Qur'an rasmified](assets/quranic_text_rasmified.png)
